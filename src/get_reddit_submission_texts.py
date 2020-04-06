@@ -19,6 +19,13 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
+            "-a",
+            "--after_date",
+            help="after date - format %Y-%m-%dT%H:%M:%S",
+            required=True,
+            type=lambda s: dt.datetime.strptime(s, "%Y-%m-%dT%H:%M:%S")
+            )
+    parser.add_argument(
             "-s",
             "--subreddit",
             help="please provide the subreddtit",
@@ -32,9 +39,17 @@ if __name__ == '__main__':
             )
     args = parser.parse_args()
 
+    print(args.after_date)
 
-    tsv_files = [f for f in os.listdir('data/') \
-            if args.subreddit in f and f.endswith('.tsv')]
+    tsv_files = []
+    for f in sorted(os.listdir('data/')):
+        if args.subreddit in f and f.endswith('.tsv'):
+            a = f[:-4].split('_')[2]
+            b = f[:-4].split('_')[3]
+            file_after_datetime =  dt.datetime.strptime(a, '%Y-%m-%dT%H:%M:%S')
+            if file_after_datetime >= args.after_date:
+                print(f)
+                tsv_files.append(f)
     print(len(tsv_files))
 
 
